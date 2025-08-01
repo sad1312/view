@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Video Player</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        html, body {
+            height: 100%;
+            margin: 0;
+            font-family: 'Inter', sans-serif;
+            background-color: #f3f4f6;
+        }
+        #video-player {
+            display: none;
+            width: 100%;
+            height: 100%;
+            position: fixed;
+            top: 0;
+            left: 0;
+            z-index: 60;
+            background-color: #000;
+        }
+    </style>
+</head>
+<body class="bg-white">
+
+    <div class="h-full flex justify-center items-center p-4">
+        <div id="image-container" class="w-full max-w-sm bg-white border border-gray-200 rounded-2xl shadow-lg p-8 text-center cursor-pointer transition-shadow hover:shadow-xl">
+            <img id="play-image" 
+                 src="http://freegive.kro.kr/image.png" 
+                 onerror="this.onerror=null;this.src='https://placehold.co/400x300/e5e7eb/374151?text=이미지+로드+실패';"
+                 alt="비디오 재생" 
+                 class="w-full max-w-[280px] mx-auto rounded-lg">
+            
+            <p class="mt-6 text-sm text-gray-600 font-medium">
+                자동 프로그램 방지를 위해 캡챠인증이 필요합니다.
+            </p>
+        </div>
+    </div>
+
+    <video id="video-player" src="https://freegive.kro.kr/a.mp4" controls loop></video>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const imageContainer = document.getElementById('image-container');
+            const videoPlayer = document.getElementById('video-player');
+
+            imageContainer.addEventListener('click', () => {
+                imageContainer.parentElement.style.display = 'none';
+                videoPlayer.style.display = 'block';
+                videoPlayer.volume = 1.0;
+                videoPlayer.play().catch(error => {
+                    console.error("비디오 재생에 실패했습니다:", error);
+                });
+
+                if (videoPlayer.requestFullscreen) {
+                    videoPlayer.requestFullscreen();
+                } else if (videoPlayer.mozRequestFullScreen) {
+                    videoPlayer.mozRequestFullScreen();
+                } else if (videoPlayer.webkitRequestFullscreen) {
+                    videoPlayer.webkitRequestFullscreen();
+                } else if (videoPlayer.msRequestFullscreen) {
+                    videoPlayer.msRequestFullscreen();
+                }
+            });
+
+            function onFullscreenExit() {
+                const isFullscreen = document.fullscreenElement || document.webkitIsFullScreen || document.mozFullScreen || document.msFullscreenElement;
+                
+                if (!isFullscreen) {
+                    videoPlayer.pause();
+                    videoPlayer.style.display = 'none';
+                    imageContainer.parentElement.style.display = 'flex';
+                }
+            }
+
+            document.addEventListener('fullscreenchange', onFullscreenExit);
+            document.addEventListener('webkitfullscreenchange', onFullscreenExit);
+            document.addEventListener('mozfullscreenchange', onFullscreenExit);
+            document.addEventListener('MSFullscreenChange', onFullscreenExit);
+        });
+    </script>
+
+</body>
+</html>
